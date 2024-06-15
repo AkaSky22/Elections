@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Elections</title>
+    <style>
+        .candidate {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .candidate img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+        .candidate button {
+            margin-left: 20px;
+        }
+        .results {
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        const candidates = ['Candidate 1', 'Candidate 2', 'Candidate 3'];
+
+        function initializeVotes() {
+            if (!localStorage.getItem('votes')) {
+                const votes = {};
+                candidates.forEach(candidate => {
+                    votes[candidate] = 0;
+                });
+                localStorage.setItem('votes', JSON.stringify(votes));
+            }
+        }
+
+        function vote(candidateName) {
+            if (localStorage.getItem('voted')) {
+                alert("You have already voted!");
+                return;
+            }
+            localStorage.setItem('voted', true);
+
+            const votes = JSON.parse(localStorage.getItem('votes'));
+            votes[candidateName]++;
+            localStorage.setItem('votes', JSON.stringify(votes));
+
+            alert("Thank you for voting for " + candidateName);
+            document.getElementById('vote-buttons').style.display = 'none';
+            document.getElementById('vote-again-button').style.display = 'block';
+
+            displayResults();
+        }
+
+        function resetVote() {
+            localStorage.removeItem('voted');
+            document.getElementById('vote-buttons').style.display = 'block';
+            document.getElementById('vote-again-button').style.display = 'none';
+        }
+
+        function displayResults() {
+            const votes = JSON.parse(localStorage.getItem('votes'));
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<h2>Current Results</h2>';
+            candidates.forEach(candidate => {
+                resultsDiv.innerHTML += `<p>${candidate}: ${votes[candidate]}</p>`;
+            });
+        }
+
+        window.onload = function() {
+            initializeVotes();
+            if (localStorage.getItem('voted')) {
+                document.getElementById('vote-buttons').style.display = 'none';
+                document.getElementById('vote-again-button').style.display = 'block';
+            }
+            displayResults();
+        }
+    </script>
+</head>
+<body>
+    <h1>School Elections</h1>
+    <div id="vote-buttons">
+        <div class="candidate">
+            <img src="candidate1.jpg" alt="Candidate 1">
+            <span>Candidate 1</span>
+            <button onclick="vote('Candidate 1')">Vote</button>
+        </div>
+        <div class="candidate">
+            <img src="candidate2.jpg" alt="Candidate 2">
+            <span>Candidate 2</span>
+            <button onclick="vote('Candidate 2')">Vote</button>
+        </div>
+        <div class="candidate">
+            <img src="candidate3.jpg" alt="Candidate 3">
+            <span>Candidate 3</span>
+            <button onclick="vote('Candidate 3')">Vote</button>
+        </div>
+    </div>
+    <div id="vote-again-button" style="display:none;">
+        <button onclick="resetVote()">Submit Next Vote</button>
+    </div>
+    <div id="results" class="results"></div>
+</body>
+  </html>
